@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>11KV Feeder Survey Pro</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);--bg:#f2f6fb;--card:#fff;--tx:#142238;--mut:#58687c;--bd:#dce4ee;--hd:#071321;--pri:#1264ff;--sec:#e9eef5;--ok:#087a4b;--st:#f5f7fa}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1520;--card:#162233;--tx:#e6edf6;--mut:#9fb0c5;--bd:#26374d;--hd:#050b14;--sec:#22324a;--st:#1b2a3f;--ok:#41d696}}
+:root[data-theme="dark"]{--bg:#0d1520;--card:#162233;--tx:#e6edf6;--mut:#9fb0c5;--bd:#26374d;--hd:#050b14;--sec:#22324a;--st:#1b2a3f;--ok:#41d696}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font-family:system-ui,Arial,sans-serif}
+header{background:var(--hd);color:#fff;padding:12px 14px;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:18px;margin:0}header small{color:#b8c5d6;font-size:12px}
+main{max-width:950px;margin:auto;padding:12px 12px calc(84px + env(safe-area-inset-bottom,0px))}
+.screen{display:none}.screen.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-size:21px;margin:4px 0 12px}h3{margin:2px 0 10px}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin:10px 0 5px}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:9px;font-size:15px;background:var(--card);color:var(--tx)}textarea{min-height:56px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;font-size:14px;cursor:pointer;color:var(--tx)}
+.pri{background:var(--pri);color:#fff}.sec{background:var(--sec)}.gps{background:#e7f5ff;color:#00699e;width:100%}.grn{background:#e3f6ec;color:#087a4b}.dng{background:#fff0ee;color:#c92d24}.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.row>*{flex:1}
+.status{background:var(--st);border-radius:9px;padding:10px;font-size:12px;margin-top:8px;word-break:break-word}.ok{color:var(--ok);font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.kpi{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;text-align:center}.kpi b{display:block;font-size:20px}.kpi span{font-size:11px;color:var(--mut)}
+.point{background:var(--card);border:1px solid var(--bd);border-radius:14px;margin:12px 0;overflow:hidden}.ph{padding:10px 12px;background:var(--st);display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:8px}.pb{padding:12px}
+.badge{font-size:11px;background:#eaf0ff;color:#1264ff;padding:4px 8px;border-radius:99px;white-space:nowrap}.badge.br{background:#fff1e0;color:#b85c00}
+.dt{border:1px dashed var(--mut);border-radius:12px;padding:10px;margin-top:12px}
+.photo{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:8px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px;font-size:12px}th,td{border:1px solid var(--bd);padding:6px;text-align:left}th{background:var(--st)}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(4,1fr);z-index:20;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{border-radius:0;background:transparent;color:var(--mut);padding:8px 2px;font-size:11px}.nav b{display:block;font-size:18px}.nav .on{color:var(--pri)}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:30;padding:12px;overflow:auto}.mb{background:var(--card);max-width:650px;margin:20px auto;border-radius:16px;padding:15px}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.toast{display:none;position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#142238;color:#fff;padding:11px 15px;border-radius:10px;z-index:50;max-width:90%;text-align:center;font-size:14px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><div><h1>⚡ 11KV Feeder Survey Pro</h1><small>Line Chart • Table • DT Photos → PDF</small></div><button class="sec" onclick="openF()">Feeder</button></header>
+<main>
+<section id="home" class="screen on">
+<div class="card"><h2 id="title">Create Feeder Survey</h2><div id="sub" style="color:var(--mut);font-size:13px">Pehle feeder details save karein.</div></div>
+<div class="kpis"><div class="kpi"><b id="np">0</b><span>Poles</span></div><div class="kpi"><b id="nd">0</b><span>DTs</span></div><div class="kpi"><b id="ng">0</b><span>DT GPS</span></div><div class="kpi"><b id="nk">0</b><span>Total KVA</span></div></div>
+<div class="card"><h3>Feeder Details</h3><button class="pri full" onclick="openF()">⚡ Create / Edit Feeder</button></div>
+<div class="card"><h3>Field Survey</h3><button class="pri full" onclick="addPole()">＋ Add Pole (Main Line)</button></div>
+<div class="card"><h3>GPS Check</h3><button class="gps" onclick="testGPS()">📍 Capture Current GPS</button><div id="gps" class="status">Not tested.</div></div>
+</section>
+
+<section id="survey" class="screen"><div class="hd"><h2>Field Survey</h2><button class="pri" onclick="addPole()">＋ Pole</button></div>
+<div class="card"><div class="grid"><div><label>Survey Village (report section)</label><input id="vil" placeholder="e.g. Daula rajpura" onchange="D.vil=this.value.trim();save(false)"></div><div><label>From (pichhla pole)</label><input id="vfrom" placeholder="e.g. P41 (Basantpur)" onchange="setFrom(this.value)"></div></div></div>
+<div id="list"></div></section>
+
+<section id="report" class="screen"><h2>Report</h2>
+<div class="card"><label style="margin-top:0">Village</label><select id="rv" onchange="RV=this.value;renderReport()"></select>
+<div class="row"><button class="pri" onclick="makePDF(RV)">⇩ PDF (is village ki)</button><button class="grn" onclick="makePDF('*')">⇩ PDF (saare villages)</button></div>
+<div class="status">PDF me: Line Chart + Survey Table (20 rows/page) + DT Photos (15/page)</div></div>
+<div id="rp"></div></section>
+
+<section id="data" class="screen"><h2>Data</h2><div class="card">
+<button class="grn full" style="margin-bottom:8px" onclick="backup()">⇩ Backup JSON</button>
+<button class="sec full" style="margin-bottom:8px" onclick="$('imp').click()">⇧ Restore JSON</button><input id="imp" type="file" accept=".json" hidden>
+<button class="dng full" onclick="two(this,clearAll)">Delete Survey</button></div></section>
+</main>
+
+<div id="modal" class="modal"><div class="mb"><div class="hd"><h2>Feeder Details</h2><button class="sec" onclick="closeF()">✕</button></div>
+<div class="grid"><div><label>Sub-Station Name</label><input id="ss"></div><div><label>Feeder Name *</label><input id="fn"></div>
+<div><label>Feeder No.</label><input id="fno" value="FDR-001"></div><div><label>Surveyor Name</label><input id="sv"></div>
+<div><label>Mobile No.</label><input id="mob" inputmode="tel"></div><div><label>Designation</label><input id="des" value="Lineman"></div></div>
+<div class="row"><button class="sec" onclick="saveF()" style="background:var(--pri);color:#fff">Save</button><button class="sec" onclick="closeF()">Cancel</button></div></div></div>
+<div id="toast" class="toast"></div>
+<nav class="nav"><button class="on" onclick="go('home',this)"><b>⌂</b>Home</button><button onclick="go('survey',this)"><b>☷</b>Survey</button><button onclick="go('report',this)"><b>▤</b>Report</button><button onclick="go('data',this)"><b>⚙</b>Data</button></nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const KEY='11KV_SURVEY_V4',$=x=>document.getElementById(x);
+let D={feeder:null,vil:'',vf:{},points:[]},open=new Set(),RV='';
+try{Object.assign(D,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+function save(r=true){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast('Storage full - Backup JSON lein')}if(r)render()}
+function toast(x){let t=$('toast');t.textContent=x;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',3500)}
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cl=s=>String(s??'').replace(/[^\x20-\xFF]/g,'?');
+function two(b,fn){if(b.dataset.a){fn();return}b.dataset.a=1;let t=b.textContent;b.textContent='Pakka? Dobara dabayein';setTimeout(()=>{delete b.dataset.a;b.textContent=t},3000)}
+function go(id,b){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));if(b)b.classList.add('on');render()}
+function openF(){let f=D.feeder||{};['ss','fn','fno','sv','mob','des'].forEach(k=>$(k).value=f[k]||(k==='fno'?'FDR-001':k==='des'?'Lineman':''));$('modal').style.display='block'}
+function closeF(){$('modal').style.display='none'}
+function saveF(){if(!$('fn').value.trim()){toast('Feeder Name required');return}D.feeder={};['ss','fn','fno','sv','mob','des'].forEach(k=>D.feeder[k]=$(k).value.trim());save();closeF();toast('Feeder saved')}
+function setFrom(v){(D.vf[D.vil]??={}).from=v.trim();save(false)}
+/* GPS */
+function getGPS(cb){if(window.isSecureContext===false){toast('Ye page secure nahi (https/localhost chahiye) - GPS nahi chalega. Manual Lat/Lng use karein ya https par host karein');return}if(!navigator.geolocation){toast('GPS supported nahi - file ko seedha Chrome me kholein');return}toast('GPS la raha hai...');
+const ok=p=>cb({lat:+p.coords.latitude.toFixed(7),lng:+p.coords.longitude.toFixed(7),accuracy:+(p.coords.accuracy||0).toFixed(1)}),fr=window.top!==window.self,h=fr?' (Page frame me hai - file Chrome me kholein ya manual lat/lng dalein)':'';
+navigator.geolocation.getCurrentPosition(ok,e=>{if(e.code===1){toast('Permission blocked - Location Allow karein'+h);return}navigator.geolocation.getCurrentPosition(ok,e2=>toast((e2.code===2?'Location unavailable - phone ki Location ON karein':'GPS timeout - khuli jagah try karein')+h),{enableHighAccuracy:false,timeout:20000,maximumAge:60000})},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
+const fmt=g=>'Lat: '+g.lat+' | Lon: '+g.lng+(g.accuracy?' | ±'+g.accuracy+' m':'');
+function testGPS(){getGPS(g=>{$('gps').innerHTML='<span class="ok">GPS FIXED</span><br>'+fmt(g);toast('GPS captured')})}
+const parseLL=s=>{let m=String(s).split(/[,\s]+/).filter(Boolean).map(Number);return m.length>=2&&m.every(x=>!isNaN(x))&&Math.abs(m[0])<=90&&Math.abs(m[1])<=180?{lat:m[0],lng:m[1],accuracy:0}:null};
+function hav(a,b){let r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*r,x=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*6371000*Math.asin(Math.sqrt(x))}
+/* model */
+const mk=o=>Object.assign({pole:'',type:'Main Line',branch:'',parent:'',village:D.vil||'',distance:'',lat:'',lng:'',dts:[]},o);
+const grp=(p,q)=>p.type==='Main Line'?q.type==='Main Line':q.type==='Branch'&&q.branch===p.branch;
+function mkdt(p){let n=D.points.filter(q=>grp(p,q)).reduce((s,q)=>s+q.dts.length,0)+1;return{no:'T'+n,kva:'25',conn:'R/L',land:'',vil:p.village,off:'0',lat:'',lng:'',photo:''}}
+function addPole(){if(!D.feeder){openF();toast('Pehle feeder details save karein');return}if(!D.vil){go('survey',document.querySelectorAll('.nav button')[1]);toast('Pehle Survey Village likhein');return}
+let n=D.points.filter(p=>p.type==='Main Line').length+1;D.points.push(mk({pole:'P'+n}));open=new Set([D.points.length-1]);save();go('survey',document.querySelectorAll('.nav button')[1])}
+function next(i){let p=D.points[i],n=D.points.filter(q=>grp(p,q)).length+1;D.points.push(mk({pole:p.type==='Branch'?p.branch+'-P'+n:'P'+n,type:p.type,branch:p.branch,village:D.vil||p.village}));open=new Set([D.points.length-1]);save()}
+function branch(i){let b=($('bn'+i).value||'').trim();if(!b){toast('Branch name likhein (e.g. B1)');return}let n=D.points.filter(x=>x.type==='Branch'&&x.branch===b).length+1;D.points.push(mk({pole:b+'-P'+n,type:'Branch',branch:b,parent:D.points[i].pole,village:D.vil||D.points[i].village}));open=new Set([D.points.length-1]);save();toast(b+' shuru: '+D.points[i].pole+' se')}
+function addDT(i){D.points[i].dts.push(mkdt(D.points[i]));save()}
+const upd=(i,k,v)=>{D.points[i][k]=v;save()},updDT=(i,j,k,v)=>{D.points[i].dts[j][k]=v;save()};
+function del(i){D.points.splice(i,1);open.clear();save()}
+function delDT(i,j){D.points[i].dts.splice(j,1);save()}
+function tog(i){open.has(i)?open.delete(i):open.add(i);renderSurvey()}
+function prev(i){let p=D.points[i];for(let j=i-1;j>=0;j--)if(grp(p,D.points[j]))return D.points[j];return p.type==='Branch'?D.points.find(q=>q.pole===p.parent):null}
+function setPos(i,g){let p=D.points[i];p.lat=g.lat;p.lng=g.lng;let q=prev(i);if(!p.distance&&q&&q.lat)p.distance=Math.round(hav(q,p))}
+function cap(i){getGPS(g=>{setPos(i,g);save();toast('Pole GPS captured')})}
+function manual(i){let g=parseLL($('m'+i).value);if(!g){toast('Format: 28.4738, 77.6179');return}setPos(i,g);save();toast('Manual GPS saved')}
+function autoDist(i){let p=D.points[i],q=prev(i);if(p.lat&&q&&q.lat){p.distance=Math.round(hav(q,p));save();toast('Distance: '+p.distance+' m')}else toast('Dono poles ka GPS chahiye')}
+function putDT(i,j,g){let p=D.points[i],d=p.dts[j];d.lat=g.lat;d.lng=g.lng;if(!p.lat&&!(+d.off)){setPos(i,g)}}
+function capDT(i,j){getGPS(g=>{putDT(i,j,g);save();toast('DT GPS captured')})}
+function manualDT(i,j){let g=parseLL($('md'+i+'_'+j).value);if(!g){toast('Format: 28.4738, 77.6179');return}putDT(i,j,g);save();toast('Manual GPS saved')}
+function photo(i,j,f){if(!f)return;let r=new FileReader();r.onload=e=>{let im=new Image();im.onload=()=>{let s=Math.min(1,600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);D.points[i].dts[j].photo=c.toDataURL('image/jpeg',.55);save();toast('Photo saved')};im.src=e.target.result};r.readAsDataURL(f)}
+/* survey UI */
+function dtb(p,i,d,j){return `<div class="dt"><div class="hd"><b>DT ${esc(d.no)}</b><button class="dng" onclick="two(this,()=>delDT(${i},${j}))">Delete DT</button></div>
+<div class="grid"><div><label>DT No.</label><input value="${esc(d.no)}" onchange="updDT(${i},${j},'no',this.value)"></div>
+<div><label>KVA</label><select onchange="updDT(${i},${j},'kva',this.value)">${['10','16','25','63','100','160','250','400','630'].map(x=>`<option ${d.kva===x?'selected':''}>${x}</option>`).join('')}</select></div>
+<div><label>R/L or PTW</label><select onchange="updDT(${i},${j},'conn',this.value)"><option ${d.conn==='R/L'?'selected':''}>R/L</option><option ${d.conn==='PTW'?'selected':''}>PTW</option></select></div>
+<div><label>Pole se doori (m)</label><input type="number" value="${esc(d.off)}" onchange="updDT(${i},${j},'off',this.value)"></div></div>
+<label>DT Village</label><input value="${esc(d.vil)}" onchange="updDT(${i},${j},'vil',this.value)">
+<label>Location & Landmark</label><textarea onchange="updDT(${i},${j},'land',this.value)">${esc(d.land)}</textarea>
+<button class="gps" style="margin-top:8px" onclick="capDT(${i},${j})">📍 ${d.lat?'Update DT GPS':'Capture DT GPS'}</button>
+<div class="status ${d.lat?'ok':''}">${d.lat?fmt(d):'GPS not captured'}</div>
+<div class="row"><input id="md${i}_${j}" placeholder="28.4738, 77.6179" style="flex:2"><button class="sec" onclick="manualDT(${i},${j})">✎ Manual</button></div>
+<label>DT Photo</label><input type="file" accept="image/*" capture="environment" onchange="photo(${i},${j},this.files[0])">${d.photo?`<img class="photo" src="${d.photo}" alt="DT">`:''}</div>`}
+function body(p,i){return `<div class="pb"><div class="grid"><div><label>Pole No.</label><input value="${esc(p.pole)}" onchange="upd(${i},'pole',this.value)"></div><div><label>Village (section)</label><input value="${esc(p.village)}" onchange="upd(${i},'village',this.value)"></div>
+<div><label>Line</label><select onchange="upd(${i},'type',this.value)"><option ${p.type==='Main Line'?'selected':''}>Main Line</option><option ${p.type==='Branch'?'selected':''}>Branch</option></select></div><div><label>Branch No.</label><input value="${esc(p.branch)}" placeholder="B1" onchange="upd(${i},'branch',this.value)"></div></div>
+<label>Pichhle pole se doori (m)</label><div class="row" style="margin-top:0"><input type="number" style="flex:2" value="${esc(p.distance)}" onchange="upd(${i},'distance',this.value)"><button class="sec" onclick="autoDist(${i})">📏 GPS se</button></div>
+<button class="gps" style="margin-top:8px" onclick="cap(${i})">📍 ${p.lat?'Update Pole GPS':'Capture Pole GPS'}</button><div class="status ${p.lat?'ok':''}">${p.lat?fmt(p):'Pole GPS (optional)'}</div>
+<div class="row"><input id="m${i}" placeholder="28.4738, 77.6179" style="flex:2"><button class="sec" onclick="manual(${i})">✎ Manual</button></div>
+${p.dts.map((d,j)=>dtb(p,i,d,j)).join('')}
+<button class="pri full" style="margin-top:12px" onclick="addDT(${i})">＋ DT is pole par</button>
+<div class="row"><button class="sec" onclick="next(${i})">＋ Agla Pole (same line)</button></div>
+<div class="row"><input id="bn${i}" placeholder="Branch e.g. B1" style="flex:2"><button class="sec" onclick="branch(${i})">⑂ Start Branch</button></div>
+<div class="row"><button class="dng" onclick="two(this,()=>del(${i}))">Delete Pole</button></div></div>`}
+function renderSurvey(){$('vil').value=D.vil||'';$('vfrom').value=(D.vf[D.vil]||{}).from||'';
+$('list').innerHTML=D.points.length?D.points.map((p,i)=>`<div class="point"><div class="ph" onclick="tog(${i})"><b>${esc(p.pole)}${p.dts.length?' • '+p.dts.map(d=>esc(d.no)).join(', '):''}</b><span class="badge ${p.type==='Branch'?'br':''}">${p.type==='Branch'?esc(p.branch):'M.L'} • ${esc(p.village)}</span></div>${open.has(i)?body(p,i):''}</div>`).join(''):'<div class="card">Koi pole nahi. "＋ Pole" dabayein.</div>'}
+/* report model */
+function sections(){let S={},names=[];D.points.forEach(p=>{let v=p.village||'Village';if(!S[v]){S[v]=[];names.push(v)}S[v].push(p)});
+return names.map(v=>{let a=S[v],ch=new Map(),last={};a.forEach(p=>{let k=p.type==='Branch'?'B'+p.branch:'ML',l=last[k],par=a.find(q=>q.pole===p.parent),base=l?ch.get(l):(par&&ch.has(par)?ch.get(par):0);ch.set(p,base+(+p.distance||0));last[k]=p});return{v,a,ch}})}
+const lab=(p,d)=>p.type==='Branch'?p.branch+'-'+d.no:'M.L-'+d.no,code=(p,d)=>p.type==='Branch'?p.branch+d.no:d.no,ll=v=>(+v).toFixed(6);
+const rowsOf=s=>{let r=[];s.a.forEach(p=>p.dts.forEach(d=>r.push({p,d,at:s.ch.get(p)})));return r};
+const loc=(r,s)=>(r.d.land||'')+', '+(r.d.vil||r.p.village||s.v);
+const L=v=>v>=1000?(v/1000).toFixed(3)+' km':Math.round(v)+' m';
+function lens(s){let ml=0,bs={};s.a.forEach(p=>{let x=+p.distance||0;if(p.type==='Main Line')ml+=x;else bs[p.branch]=(bs[p.branch]||0)+x});return{ml,bs}}
+function wrap(t,n){let o=[],c='';String(t||'').split(' ').forEach(w=>{if((c+' '+w).trim().length>n&&c){o.push(c);c=w}else c=(c+' '+w).trim()});if(c)o.push(c);return o.slice(0,2)}
+/* line chart: list of primitives, drawn to SVG preview and PDF */
+function chart(s){const step=30,X0=34,SL=20,P=[],lanes={ML:[]},X=new Map(),F=D.feeder||{},ln=lens(s);
+s.a.forEach(p=>{(lanes[p.type==='Branch'?(p.branch||'B'):'ML']??=[]).push(p)});
+const br=Object.keys(lanes).filter(k=>k!=='ML'),sx={ML:X0},pp={};
+lanes.ML.forEach((p,k)=>X.set(p,X0+(k+1)*step));
+br.forEach(k=>{let a=lanes[k],q=s.a.find(z=>z.pole===a[0].parent),x0=q&&X.has(q)?X.get(q):X0;pp[k]=q&&X.has(q)?q:null;sx[k]=x0;a.forEach((p,j)=>X.set(p,x0+(j+1)*step))});
+const hh=k=>18+SL*Math.max(1,...lanes[k].map(p=>p.dts.length)),ab=br.filter((k,i)=>i%2==0),bl=br.filter((k,i)=>i%2==1),Y={};let cur=14;
+ab.slice().reverse().forEach(k=>{Y[k]=cur+9;cur+=hh(k)});Y.ML=cur+9;cur+=hh('ML');bl.forEach(k=>{Y[k]=cur+9;cur+=hh(k)});
+const W=Math.max(297,Math.round(Math.max(X0,...X.values())+step+10)),H=Math.max(210,Math.round(cur+8)),yOf=p=>Y[p.type==='Branch'?(p.branch||'B'):'ML'];
+P.push(['t',6,8,10,`LINE CHART - ${F.fn||''} - ${s.v}   (Page size ${W} x ${H} mm)`,'l',1,'#142238']);
+Object.keys(lanes).forEach(k=>{let a=lanes[k],col=k==='ML'?'#1264ff':'#f28c28',y=Y[k],x0=sx[k],xe=X.get(a[a.length-1]);
+if(k!=='ML'){let py=pp[k]?yOf(pp[k]):Y.ML;P.push(['l',x0,py,x0,y,col,.5])}
+P.push(['l',x0,y,xe,y,col,.6]);
+P.push(['t',x0-3,y+1.2,7,k==='ML'?'M.L':k,'r',1,col]);
+if(k==='ML')P.push(['t',x0,y-3,6,'From '+((D.vf[s.v]||{}).from||'start'),'c',0,'#142238']);
+let px=x0;a.forEach(p=>{let x=X.get(p),y2=y;if(+p.distance)P.push(['t',(px+x)/2,y+3.8,5.5,Math.round(+p.distance)+' m','c',0,'#142238']);px=x;
+P.push(['t',x,y-3,6,`${p.pole} (${Math.round(s.ch.get(p))} m)`,'c',0,'#142238']);
+P.push(p.dts.length?['r',x-1.6,y-1.6,3.2,3.2,'#c92d24']:['c',x,y,1.1,col]);
+p.dts.forEach((d,j)=>{let t=[lab(p,d),d.kva+' KVA '+d.conn,...wrap(d.land,22),'Lat. '+(d.lat?ll(d.lat):''),'Lon. '+(d.lng?ll(d.lng):'')],y0=y+9+j*SL;t.forEach((z,n)=>P.push(['t',x,y0+n*3,5.5,z,'c',n===0?1:0,'#142238']))})});
+P.push(['t',xe+3,y+1.2,6,'END '+(k==='ML'?'M.L':k)+' = '+L(k==='ML'?ln.ml:ln.bs[k]||0),'l',1,col])});
+return{W,H,P}}
+function svg(c){let t=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;'),s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${c.W} ${c.H}" width="${c.W*3.2}" style="max-width:none;display:block;background:#fff"><rect width="${c.W}" height="${c.H}" fill="#fff"/>`;
+c.P.forEach(o=>{if(o[0]==='l')s+=`<line x1="${o[1]}" y1="${o[2]}" x2="${o[3]}" y2="${o[4]}" stroke="${o[5]}" stroke-width="${o[6]}"/>`;else if(o[0]==='c')s+=`<circle cx="${o[1]}" cy="${o[2]}" r="${o[3]}" fill="${o[4]}"/>`;else if(o[0]==='r')s+=`<rect x="${o[1]}" y="${o[2]}" width="${o[3]}" height="${o[4]}" fill="${o[5]}"/>`;else s+=`<text x="${o[1]}" y="${o[2]}" font-size="${o[3]*.3528}" text-anchor="${{c:'middle',r:'end',l:'start'}[o[5]]}" font-weight="${o[6]?700:400}" fill="${o[7]}" font-family="Arial">${t(o[4])}</text>`});return s+'</svg>'}
+function renderReport(){let S=sections();$('rv').innerHTML=S.map(s=>`<option ${s.v===RV?'selected':''}>${esc(s.v)}</option>`).join('');
+if(!S.length){$('rp').innerHTML='<div class="card">Abhi data nahi. Survey me poles/DTs add karein.</div>';return}
+let s=S.find(x=>x.v===RV)||S[0];RV=s.v;$('rv').value=RV;let r=rowsOf(s),ln=lens(s);
+$('rp').innerHTML=`<div class="card"><h3>Line Chart</h3><div class="tw">${svg(chart(s))}</div></div><div class="card"><h3>Survey Table</h3><div class="tw"><table><thead><tr><th>S.No</th><th>Main Line</th><th>Branch</th><th>KVA</th><th>Location / Landmark</th><th>Latitude</th><th>Longitude</th></tr></thead><tbody>${r.length?r.map((x,i)=>`<tr><td>${i+1}</td><td>${x.p.type==='Main Line'?esc(x.d.no):''}</td><td>${x.p.type==='Branch'?esc(code(x.p,x.d)):''}</td><td>${esc(x.d.kva)} KVA</td><td>${esc(loc(x,s))}</td><td>${x.d.lat?ll(x.d.lat)+'N':''}</td><td>${x.d.lng?ll(x.d.lng)+'E':''}</td></tr>`).join(''):'<tr><td colspan="7">No DT entries.</td></tr>'}</tbody></table></div></div>
+<div class="card"><h3>Line Chart Length</h3><div class="status" style="line-height:1.7">Main Line: <b>${L(ln.ml)}</b>${Object.entries(ln.bs).map(([b,v])=>'<br>'+esc(b)+': <b>'+L(v)+'</b>').join('')}</div></div>`}
+/* PDF */
+function pdfChart(doc,c){c.P.forEach(o=>{if(o[0]==='l'){doc.setDrawColor(o[5]);doc.setLineWidth(o[6]);doc.line(o[1],o[2],o[3],o[4])}else if(o[0]==='c'){doc.setFillColor(o[4]);doc.circle(o[1],o[2],o[3],'F')}else if(o[0]==='r'){doc.setFillColor(o[5]);doc.rect(o[1],o[2],o[3],o[4],'F')}else{doc.setFont('helvetica',o[6]?'bold':'normal');doc.setFontSize(o[3]);doc.setTextColor(o[7]);doc.text(cl(o[4]),o[1],o[2],{align:{c:'center',r:'right',l:'left'}[o[5]]})}})}
+function pdfTable(doc,s,rows){const F=D.feeder,n=Math.max(1,Math.ceil(rows.length/20)),cw=[12,24,24,24,105,44,44],hd=['S.No','Main Line (T1,T2..)','Branch (B1T1..)','T/F Capacity KVA','TF Location & Land Mark','Latitude (28.xxxxxxN)','Longitude (77.xxxxxxE)'];
+for(let pg=0;pg<n;pg++){doc.addPage([297,210],'l');doc.setTextColor('#000000');doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text('EUDD-TECHNICAL, 11KV YEIDA, SEC-150 NOIDA',148.5,10,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(9);
+[`Sub-Station Name: ${F.ss}`,`Feeder Name: ${F.fn}`,`Surveyor Name: ${F.sv}`,`Mobile No: ${F.mob}`].forEach((t,i)=>doc.text(cl(t),10,18+i*5));
+[`Page No: ${pg+1} / ${n}`,'Line Chart Enclosed No: 1','Main Line / Branch: M.L and branches',`Designation: ${F.des}`].forEach((t,i)=>doc.text(cl(t),180,18+i*5));
+doc.setDrawColor('#000000');doc.setLineWidth(.2);let x=10,y=40;doc.setFont('helvetica','bold');doc.setFontSize(7);
+hd.forEach((h,k)=>{doc.setFillColor('#eef2f7');doc.rect(x,y,cw[k],10,'FD');doc.text(doc.splitTextToSize(h,cw[k]-2),x+1,y+4);x+=cw[k]});
+doc.setFont('helvetica','normal');doc.setFontSize(7.5);y=50;
+for(let i=0;i<20;i++){let idx=pg*20+i,r=rows[idx],c=r?[idx+1,r.p.type==='Main Line'?r.d.no:'',r.p.type==='Branch'?code(r.p,r.d):'',r.d.kva+' KVA',loc(r,s),r.d.lat?ll(r.d.lat)+'N':'',r.d.lng?ll(r.d.lng)+'E':'']:[idx+1,'','','','','',''];x=10;
+c.forEach((v,k)=>{doc.rect(x,y,cw[k],7);doc.text(cl(doc.splitTextToSize(String(v),cw[k]-2)[0]||''),x+1,y+4.7);x+=cw[k]});y+=7}
+doc.setFontSize(8);doc.text('(SDO/JE/TG-2/LM/PM)',287,199,{align:'right'});doc.text('Signature',287,204,{align:'right'})}}
+const crop=(src,r)=>new Promise(res=>{let im=new Image();im.onload=()=>{let w=im.width,h=im.height,cw=w,ch=w/r;if(ch>h){ch=h;cw=h*r}let c=document.createElement('canvas');c.width=Math.round(cw);c.height=Math.round(ch);c.getContext('2d').drawImage(im,(w-cw)/2,(h-ch)/2,cw,ch,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.8))};im.onerror=()=>res(null);im.src=src});
+async function pdfPhotos(doc,s,rows){const F=D.feeder,n=Math.max(1,Math.ceil(rows.length/15)),cw=57.2,ph=37.5;
+for(let pg=0;pg<n;pg++){doc.addPage([297,210],'l');doc.setTextColor('#000000');doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(cl(`DT PHOTOS - ${F.fn} - ${s.v}`),4,7);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(`Page ${pg+1} of ${n}`,293,7,{align:'right'});
+for(let i=0;i<15;i++){let r=rows[pg*15+i];if(!r)break;let x=4+(i%5)*58.2,y=12+((i/5)|0)*65.5;doc.setDrawColor('#000000');doc.setLineWidth(.25);doc.rect(x,y,cw,64);
+if(r.d.photo){let im=await crop(r.d.photo,cw/ph);if(im)doc.addImage(im,'JPEG',x,y,cw,ph)}
+let t=[`${lab(r.p,r.d)} | ${r.d.kva} KVA ${r.d.conn}`,r.d.land||'',r.d.vil||r.p.village,`Feeder: ${F.fn} | Village: ${s.v}`,`Lat. ${r.d.lat?ll(r.d.lat):''}  Lon. ${r.d.lng?ll(r.d.lng):''}`,`On ${r.p.pole}, ${r.d.off||0} m from pole, At ${Math.round(r.at)} m`];
+t.forEach((z,k)=>{doc.setFont('helvetica',k?'normal':'bold');doc.setFontSize(6.5);doc.text(cl(doc.splitTextToSize(String(z),cw-3)[0]||''),x+1.2,y+ph+4+k*3.1)})}}}
+async function makePDF(w){if(!window.jspdf){toast('PDF library load nahi hui - internet check karein');return}if(!D.feeder){openF();return}
+let S=sections().filter(s=>w==='*'||s.v===w);if(!S.length){toast('Koi data nahi');return}toast('PDF ban rahi hai, thoda wait karein...');
+try{let doc=null;for(const s of S){let c=chart(s),o=c.W>c.H?'l':'p';if(!doc)doc=new window.jspdf.jsPDF({orientation:o,unit:'mm',format:[c.W,c.H]});else doc.addPage([c.W,c.H],o);pdfChart(doc,c);let r=rowsOf(s);pdfTable(doc,s,r);await pdfPhotos(doc,s,r)}
+let name=`${D.feeder.fn}${w==='*'?'':'-'+w}.pdf`.replace(/[^\w.\- ]/g,'_');
+try{let d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:name,data:doc.output('blob')});toast('PDF saved')}catch(e){if(e&&e.code==='declined')return;doc.save(name);toast('PDF download ki')}}catch(e){toast('PDF error: '+(e.message||e))}}
+async function out(name,data){try{let d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:name,data});toast('Saved')}catch(e){if(e&&e.code==='declined')return;let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=name;a.click()}}
+function backup(){out((D.feeder?.fno||'11KV-Survey')+'.json',JSON.stringify(D))}
+$('imp').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let j=JSON.parse(r.result);if(!Array.isArray(j.points))throw 0;D=Object.assign({feeder:null,vil:'',vf:{},points:[]},j);save();toast('Survey restored')}catch{toast('Invalid JSON')}};r.readAsText(f)}
+function clearAll(){D={feeder:null,vil:'',vf:{},points:[]};open.clear();save();toast('Survey deleted')}
+function render(){let f=D.feeder,dts=D.points.flatMap(p=>p.dts);$('title').textContent=f?f.fn+' • '+f.fno:'Create Feeder Survey';$('sub').textContent=f?(f.ss||'')+' • '+(f.sv||'Surveyor'):'Pehle feeder details save karein.';$('np').textContent=D.points.length;$('nd').textContent=dts.length;$('ng').textContent=dts.filter(d=>d.lat).length;$('nk').textContent=dts.reduce((s,d)=>s+(+d.kva||0),0);
+let a=document.querySelector('.screen.on').id;if(a==='survey')renderSurvey();if(a==='report')renderReport()}
+render();
+</script>
+</body>
+</html>
