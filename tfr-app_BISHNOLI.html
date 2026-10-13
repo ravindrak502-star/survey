@@ -91,7 +91,7 @@ const NOTES=['उक्त आवेदन को निरस्त करन�
 const TF=['10 KVA','16 KVA','25 KVA','63 KVA','100 KVA','160 KVA','250 KVA','400 KVA','630 KVA'],EST=['NO','YES','YES-LT EXTENTION','YES-TRANSFORMER INCREASEING CAPICITY'],YN=['NO','YES'];
 let S={set:{},pend:[],done:{},drafts:{},cur:null},R=null,dt=null;
 try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
-S.set=Object.assign({},DEF,S.set); S.set.sub=''; S.set.div='EDD DADRI NOIDA'; S.set.feeders=FD; S.drafts=S.drafts||{}; if(S.cur&&S.cur.appNo&&!S.drafts[S.cur.appNo]) S.drafts[S.cur.appNo]=JSON.parse(JSON.stringify(S.cur));
+S.set=Object.assign({},DEF,S.set); S.set.sub='33/11 KV S/S BISHNOLI'; S.set.div='EDD DADRI NOIDA'; S.set.feeders=FD; S.drafts=S.drafts||{}; if(S.cur&&S.cur.appNo&&!S.drafts[S.cur.appNo]) S.drafts[S.cur.appNo]=JSON.parse(JSON.stringify(S.cur));
 const logo=()=>S.set.logo||LOGO;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Storage full - Settings se Backup lein')}}
 function toast(x){let t=$('toast');t.textContent=x;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',3500)}
@@ -395,20 +395,23 @@ function applyStatus(v){
  const statusText=String(v||'').trim();
  const l=statusText.toLowerCase();
  const specialStatus='NO - आवेदक का परिसर अविद्युतीकृत क्षेत्र में स्थित है।';
+ const paidStatus='YES - 71.5 Rs.Sq. feet Amount paid by Applicant';
  const rejectionRemark='उक्त आवेदन को निरस्त करने की संस्तुति की जाती है I';
- const hadAutoRejectionRemark=R.note===rejectionRemark;
+ const receiptRemark='71.5 Rs.Sq. feet Amount paid by Applicant RECEIPT NO -';
+ // Clear only a remark that was auto-filled by this status rule; preserve user-entered remarks.
+ if(R.note===rejectionRemark || R.note===receiptRemark) R.note='';
  if(l.startsWith('yes')) R.rejectTop='NO';
  else if(l.startsWith('no')) R.rejectTop='YES';
  if(statusText===specialStatus){
    R.colony='YES';
    R.note=rejectionRemark;
- }else{
-   if(l.startsWith('yes')) R.colony='NO';
-   // The rejection recommendation is only auto-filled for the exact un-electrified-area status.
-   if(hadAutoRejectionRemark) R.note='';
-   // Keep the separate receipt remark rule; never auto-fill rejection recommendation for generic NO.
-   if(l.includes('paid') && !l.includes('not pay')) R.note=NOTES[5];
+ }else if(statusText===paidStatus){
+   R.colony='NO';
+   R.note=receiptRemark;
+ }else if(l.startsWith('yes')){
+   R.colony='NO';
  }
+ // For every other Connection Status, do not auto-fill any Other Remark.
 }
 function autoRules(){
  const raw=String(R.ltDist||'').trim().replace(/,/g,'.');
@@ -556,7 +559,7 @@ async function ocrPhoto(){
 }
 
 function gps(){if(!navigator.geolocation||window.isSecureContext===false){toast('GPS yahan nahi chalega (https/localhost chahiye) - lat/lng haath se likhein');return}toast('GPS la raha hai...');navigator.geolocation.getCurrentPosition(p=>{R.lat=p.coords.latitude.toFixed(6);R.lng=p.coords.longitude.toFixed(6);renderForm()},()=>toast('GPS nahi mila - permission/Location ON check karein'),{enableHighAccuracy:true,timeout:20000})}
-function missing(){const need=[['date','Inspection date'],['status','Connection status']];
+function missing(){if(R&&!String(R.substation||'').trim())R.substation='33/11 KV S/S BISHNOLI';const need=[['date','Inspection date'],['status','Connection status']];
 if(R.rejectTop==='NO')need.push(['supply','Supply type'],['meterType','Meter type'],['substation','Substation'],['feeder','Feeder'],['ltDist','LT pole distance'],['tf','Transformer capacity'],['prevConn','पूर्व संयोजन'],['estimate','प्राकलन'],['meterSel','तटस्थ संयोजन'],['fir','FIR'],['colony','Colony status']);
 let bad=need.find(([k])=>!String(R[k]||'').trim());
 if(!bad&&R.prevConn==='YES'){if(!/^\d{10}$/.test(R.prevId||''))bad=['prevId','DUES A/c ID (exactly 10 digit)'];else if(!R.dues)bad=['dues','Dues amount']}
