@@ -398,22 +398,22 @@ function syncAutoFieldsUI(){
   ['devFloors','devName','colPlots','colArea','colDeposit'].forEach(k=>{const el=document.querySelector(`[data-k=\"${k}\"]`);if(el)el.value=R[k]||''});
 }
 function applyStatus(v){
- const l=String(v||'').trim().toLowerCase();
- const oldSpecial=R.note==='उक्त आवेदन को निरस्त करने की संस्तुति की जाती है I' && R.colony==='YES';
- if(l.startsWith('yes')) R.rejectTop='NO';
- else if(l.startsWith('no')) R.rejectTop='YES';
- if(l.includes('अविद्युतीकृत क्षेत्र में स्थित है')){
-   R.colony='YES';
-   R.note='उक्त आवेदन को निरस्त करने की संस्तुति की जाती है I';
- }else{
-   if(l.startsWith('yes')) R.colony='NO';
-   if(oldSpecial){R.colony='';R.note='';}
-   else {
-     R.note='';
-     if(l==='no'||l.includes('not pay'))R.note=NOTES[0];
-     else if(l.includes('paid'))R.note=NOTES[5];
-   }
- }
+  const l=String(v||'').trim().toLowerCase();
+  const isUnelectrified=l.includes('अविद्युतीकृत क्षेत्र में स्थित है');
+  const isPaid715=l==='yes - 71.5 rs.sq. feet amount paid by applicant';
+  if(l.startsWith('yes')) R.rejectTop='NO';
+  else if(l.startsWith('no')) R.rejectTop='YES';
+  // Auto-fill Other Remark only for the two specified Connection Status values.
+  if(isUnelectrified){
+    R.colony='YES';
+    R.note=NOTES[0];
+  }else if(isPaid715){
+    R.colony='NO';
+    R.note='71.5 Rs.Sq. feet Amount paid by Applicant RECEIPT NO -';
+  }else{
+    if(l.startsWith('yes')) R.colony='NO';
+    R.note='';
+  }
 }
 function autoRules(){
  const raw=String(R.ltDist||'').trim().replace(/,/g,'.');
